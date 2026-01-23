@@ -1,10 +1,10 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import HeaderLogo from '../header/HeaderLogo'; // 같은 header 폴더 가정, ../ 제거
+import Logo from '../ui/Logo';
 import HeaderNavDesktop from '../header/HeaderNavDesktop';
 import HeaderProfile from '../header/HeaderProfile';
 import HeaderNavMobile from '../header/HeaderNavMobile';
 import { navItems } from '../header/types';
-import { useNavStore } from '../../stores/useNavStore'; // stores 경로 확인
+import { useNavStore } from '../../stores/useNavStore';
 
 export default function Header() {
     const { isMobileOpen, toggleMobile } = useNavStore();
@@ -29,7 +29,7 @@ export default function Header() {
                             <span className="sr-only">Open main menu</span>
                             <Bars3Icon
                                 aria-hidden="true"
-                                className={`block size-6 transition-opacity ${!isMobileOpen ? 'opacity-100' : 'opacity-0'}`}
+                                className={`block size-6 transition-opacity ${isMobileOpen ? 'opacity-0' : 'opacity-100'}`}
                             />
                             <XMarkIcon
                                 aria-hidden="true"
@@ -40,7 +40,7 @@ export default function Header() {
 
                     {/* Logo & Desktop Nav */}
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                        <HeaderLogo />
+                        <Logo />
                         <div className="ml-6 hidden sm:ml-6 sm:flex sm:space-x-8">
                             <HeaderNavDesktop items={navItems} />
                         </div>

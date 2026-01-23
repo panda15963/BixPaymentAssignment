@@ -1,5 +1,6 @@
 import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react';
 import { Link } from 'react-router-dom';
+import { useNavStore } from '../../stores/useNavStore';
 
 const profileItems = [
     { name: '마이페이지', to: '/profile' },
@@ -7,6 +8,23 @@ const profileItems = [
 ];
 
 export default function HeaderProfile() {
+    const { userProfile } = useNavStore();
+
+    // 로그아웃 상태: 파란색 로그인 버튼
+    if (!userProfile) {
+        return (
+            <div className="ml-3 flex items-center">
+                <Link
+                    to="/login"
+                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 rounded-md shadow-sm transition-all duration-200 dark:bg-blue-500 dark:hover:bg-blue-600"
+                >
+                    로그인
+                </Link>
+            </div>
+        );
+    }
+
+    // 로그인 상태: 프로필 메뉴
     return (
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <Menu as="div" className="relative ml-3">
@@ -15,13 +33,13 @@ export default function HeaderProfile() {
                     <span className="sr-only">Open user menu</span>
                     <img
                         alt=""
-                        src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
-                        className="size-8 rounded-full bg-gray-100 outline tnwj-outline-offset-1 outline-black/5 dark:bg-gray-800 dark:outline-white/10"
+                        src={userProfile.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
+                        className="size-8 rounded-full bg-gray-100 outline outline-1 outline-black/5 dark:bg-gray-800 dark:outline-white/10"
                     />
                 </MenuButton>
                 <MenuItems
                     transition
-                    className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:-outline-offset-1 dark:outline-white/10"
+                    className="absolute left-1/2 z-10 mt-2 w-48 -translate-x-1/2 origin-top rounded-md bg-white py-1 shadow-lg outline outline-1 outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:outline-white/10"
                 >
                     {profileItems.map((item) => (
                         <MenuItem key={item.name}>
