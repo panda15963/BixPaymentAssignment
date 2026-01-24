@@ -59,7 +59,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
+        <div className="flex min-h-full flex-col justify-center py-48 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <div className="bg-white px-6 py-10 shadow-sm sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
                     <h2 className="mb-8 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">

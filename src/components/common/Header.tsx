@@ -14,7 +14,7 @@ export default function Header() {
     };
 
     return (
-        <div className="relative bg-white shadow-sm dark:bg-gray-800/50 dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:bottom-0 dark:after:h-px dark:after:bg-white/10">
+        <div className="relative z-50 bg-white shadow-sm border-b dark:bg-gray-800/50 dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:bottom-0 dark:after:h-px dark:after:bg-white/10">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 justify-between">
                     {/* Mobile toggle */}
@@ -54,7 +54,7 @@ export default function Header() {
                 {isMobileOpen && (
                     <div
                         id="mobile-menu"
-                        className="absolute inset-x-0 top-full origin-top bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-xl z-50 sm:hidden"
+                        className="absolute inset-x-0 top-full origin-top bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-xl z-50 sm:hidden"
                     >
                         <HeaderNavMobile items={navItems} onNavClick={handleNavClick} />
                     </div>

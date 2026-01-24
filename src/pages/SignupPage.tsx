@@ -105,7 +105,7 @@ export default function SignupPage() {
 
     return (
         <div className="flex">
-            <div className="w-full max-w-lg">
+            <div className="w-full max-w-l py-12 px-4 sm:px-6 lg:px-8 mx-auto">
                 <div className="bg-white px-6 py-10 shadow-sm sm:rounded-lg sm:px-12 dark:bg-gray-800/50 dark:shadow-none dark:outline dark:-outline-offset-1 dark:outline-white/10">
                     <h2 className="mb-8 text-center text-2xl/9 font-bold tracking-tight text-gray-900 dark:text-white">
                         회원가입
