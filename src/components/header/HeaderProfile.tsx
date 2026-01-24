@@ -1,17 +1,24 @@
-import {Menu, MenuButton, MenuItem, MenuItems} from '@headlessui/react';
-import { Link } from 'react-router-dom';
-import { useNavStore } from '../../stores/useNavStore';
-
-const profileItems = [
-    { name: '마이페이지', to: '/profile' },
-    { name: '로그아웃', to: '/signout' },
-];
+import { Menu, MenuButton, MenuItem, MenuItems } from '@headlessui/react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function HeaderProfile() {
-    const { userProfile } = useNavStore();
+    const navigate = useNavigate();
+    const { user, clearUser } = useAuthStore();
 
-    // 로그아웃 상태: 파란색 로그인 버튼
-    if (!userProfile) {
+    const handleLogout = () => {
+        // 토큰 제거
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+
+        // 전역 사용자 상태 초기화
+        clearUser();
+
+        navigate('/login');
+    };
+
+    // 🔹 로그아웃 상태
+    if (!user) {
         return (
             <div className="ml-3 flex items-center">
                 <Link
@@ -24,33 +31,34 @@ export default function HeaderProfile() {
         );
     }
 
-    // 로그인 상태: 프로필 메뉴
+    // 🔹 로그인 상태
     return (
         <div className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
             <Menu as="div" className="relative ml-3">
-                <MenuButton className="relative flex rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500">
-                    <span className="absolute -inset-1.5" />
+                <MenuButton className="relative flex items-center gap-2 rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 dark:focus-visible:outline-indigo-500">
                     <span className="sr-only">Open user menu</span>
-                    <img
-                        alt=""
-                        src={userProfile.avatar || "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"}
-                        className="size-8 rounded-full bg-gray-100 outline outline-1 outline-black/5 dark:bg-gray-800 dark:outline-white/10"
-                    />
+                    <span className="hidden sm:block text-sm font-medium text-gray-900 dark:text-white">
+                        {user.name}
+                    </span>
                 </MenuButton>
+
                 <MenuItems
                     transition
-                    className="absolute left-1/2 z-10 mt-2 w-48 -translate-x-1/2 origin-top rounded-md bg-white py-1 shadow-lg outline outline-1 outline-black/5 transition data-closed:scale-95 data-closed:transform data-closed:opacity-0 data-enter:duration-200 data-enter:ease-out data-leave:duration-75 data-leave:ease-in dark:bg-gray-800 dark:shadow-none dark:outline-white/10"
+                    className="absolute left-1/2 z-10 mt-2 w-48 -translate-x-1/2 origin-top rounded-md bg-white py-1 shadow-lg outline outline-black/5 transition
+                               data-closed:scale-95 data-closed:opacity-0
+                               data-enter:duration-200 data-enter:ease-out
+                               data-leave:duration-75 data-leave:ease-in
+                               dark:bg-gray-800 dark:outline-white/10"
                 >
-                    {profileItems.map((item) => (
-                        <MenuItem key={item.name}>
-                            <Link
-                                to={item.to}
-                                className="flex items-center justify-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 focus:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-700 dark:focus:bg-gray-700"
-                            >
-                                {item.name}
-                            </Link>
-                        </MenuItem>
-                    ))}
+                    <MenuItem>
+                        <button
+                            onClick={handleLogout}
+                            className="flex w-full items-center justify-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100
+                                       dark:text-red-400 dark:hover:bg-gray-700"
+                        >
+                            로그아웃
+                        </button>
+                    </MenuItem>
                 </MenuItems>
             </Menu>
         </div>

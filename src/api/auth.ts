@@ -1,6 +1,10 @@
 import axiosInstance from './AxiosConfig';
 import { AxiosError } from 'axios';
 
+/* =======================
+ * Signup
+ * ======================= */
+
 export interface SignupPayload {
     username: string;
     name: string;
@@ -33,12 +37,53 @@ export const signup = async (
     } catch (error) {
         const err = error as AxiosError<SignupErrorResponse>;
 
-        // 서버에서 내려준 validation 에러가 있는 경우
         if (err.response?.data) {
             throw err.response.data;
         }
 
-        // 그 외 네트워크 / 알 수 없는 에러
         throw new Error('회원가입 중 오류가 발생했습니다.');
+    }
+};
+
+/* =======================
+ * Login
+ * ======================= */
+
+export interface LoginPayload {
+    username: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    accessToken: string;
+    refreshToken: string;
+}
+
+export type LoginErrorResponse = {
+    message: string;
+};
+
+export const login = async (
+    payload: LoginPayload
+): Promise<LoginResponse> => {
+    try {
+        const res = await axiosInstance.post<LoginResponse>(
+            '/auth/signin',
+            payload,
+            {
+                _skipAuth: true,
+                _skipAuthRedirect: true,
+            }
+        );
+
+        return res.data;
+    } catch (error) {
+        const err = error as AxiosError<LoginErrorResponse>;
+
+        if (err.response?.data?.message) {
+            throw new Error(err.response.data.message);
+        }
+
+        throw new Error('로그인 중 오류가 발생했습니다.');
     }
 };
