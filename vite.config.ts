@@ -7,13 +7,12 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://front-mission.bigs.or.kr',
+        target: 'https://api-mission.bigs.or.kr', // ✅ 백엔드
         changeOrigin: true,
         secure: true,
-        rewrite: (path) => path.replace(/^\/api/, ''),
       },
       '/media': {
-        target: 'https://front-mission.bigs.or.kr',
+        target: 'https://api-mission.bigs.or.kr', // ✅ 백엔드
         changeOrigin: true,
         secure: true,
       },
