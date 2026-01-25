@@ -3,19 +3,21 @@ import axios, {
     type InternalAxiosRequestConfig,
 } from 'axios';
 
+/* =======================
+ * Axios type augmentation
+ * ======================= */
+declare module 'axios' {
+    export interface InternalAxiosRequestConfig {
+        _retry?: boolean;
+        _skipAuth?: boolean;
+        _skipAuthRedirect?: boolean;
+    }
+}
+
 const axiosInstance: AxiosInstance = axios.create({
     baseURL: '/api',
     timeout: 10000,
 });
-
-// Extend axios config for custom flags
-declare module 'axios' {
-    interface InternalAxiosRequestConfig {
-        _skipAuth?: boolean;
-        _skipAuthRedirect?: boolean;
-        _retry?: boolean;
-    }
-}
 
 /* =======================
  * Request interceptor
@@ -32,9 +34,7 @@ axiosInstance.interceptors.request.use(
 
         return config;
     },
-    (error) => {
-        throw error;
-    }
+    (error) => Promise.reject(error)
 );
 
 /* =======================
@@ -56,10 +56,9 @@ axiosInstance.interceptors.response.use(
 
         // refresh 요청 자체는 재시도 금지
         if (originalRequest?.url?.includes('/auth/refresh')) {
-            throw error;
+            return Promise.reject(error);
         }
 
-        // accessToken 만료
         if (
             error.response?.status === 401 &&
             !originalRequest._retry &&
@@ -70,10 +69,10 @@ axiosInstance.interceptors.response.use(
             const refreshToken = localStorage.getItem('refreshToken');
             if (!refreshToken) {
                 logout();
-                throw error;
+                return Promise.reject(error);
             }
 
-            // 이미 refresh 중이면 대기
+            // 이미 refresh 중이면 큐에 대기
             if (isRefreshing) {
                 return new Promise((resolve) => {
                     refreshQueue.push((newToken: string) => {
@@ -88,13 +87,23 @@ axiosInstance.interceptors.response.use(
             isRefreshing = true;
 
             try {
-                const res = await axios.post('/api/auth/refresh', {
-                    refreshToken,
-                });
+                const res = await axios.post(
+                    '/api/auth/refresh',
+                    { refreshToken },
+                    {
+                        _skipAuth: true,
+                        _skipAuthRedirect: true,
+                    }
+                );
 
                 const newAccessToken = res.data.accessToken;
 
+                // ✅ 토큰 저장
                 localStorage.setItem('accessToken', newAccessToken);
+
+                // ✅ axios 기본 헤더 갱신 (핵심)
+                axiosInstance.defaults.headers.common.Authorization =
+                    `Bearer ${newAccessToken}`;
 
                 processQueue(newAccessToken);
 
@@ -105,13 +114,13 @@ axiosInstance.interceptors.response.use(
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
                 logout();
-                throw refreshError;
+                return Promise.reject(refreshError);
             } finally {
                 isRefreshing = false;
             }
         }
 
-        throw error;
+        return Promise.reject(error);
     }
 );
 

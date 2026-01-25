@@ -1,17 +1,34 @@
 import {
     HomeIcon,
     UsersIcon,
-    FolderIcon,
-    CalendarIcon,
     DocumentDuplicateIcon,
+    FolderIcon,
     ChartPieIcon,
 } from '@heroicons/react/24/outline'
+import type { ComponentType, SVGProps } from 'react'
+import type { BoardCategoryResponse } from '../../api/post'
 
-export const navigation = [
-    { name: 'Dashboard', to: '/posts', icon: HomeIcon },
-    { name: 'Team', to: '/posts/team', icon: UsersIcon },
-    { name: 'Projects', to: '/posts/projects', icon: FolderIcon },
-    { name: 'Calendar', to: '/posts/calendar', icon: CalendarIcon },
-    { name: 'Documents', to: '/posts/documents', icon: DocumentDuplicateIcon },
-    { name: 'Reports', to: '/posts/reports', icon: ChartPieIcon },
-]
+export type NavigationItem = {
+    name: string
+    to: string
+    icon: ComponentType<SVGProps<SVGSVGElement>>
+}
+
+const categoryIconMap: Record<string, NavigationItem['icon']> = {
+    NOTICE: HomeIcon,
+    FREE: UsersIcon,
+    QNA: DocumentDuplicateIcon,
+    ETC: FolderIcon,
+}
+
+export const buildNavigationFromCategories = (
+    categories: BoardCategoryResponse
+): NavigationItem[] => {
+    return (Object.entries(categories) as [string, string][]).map(
+        ([code, label]) => ({
+            name: label, // ✅ string
+            to: `/posts?category=${code}`,
+            icon: categoryIconMap[code] ?? ChartPieIcon,
+        })
+    )
+}

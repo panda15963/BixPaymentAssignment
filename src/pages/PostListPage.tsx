@@ -1,90 +1,115 @@
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
+import { getPosts } from '../api/post'
+import type { BoardPost } from '../api/post'
+import Pagination from '../components/common/Pagination'
+import { useCategory } from '../hooks/useCategory'
 
-interface Post {
-    id: number;
-    title: string;
-    author: string;
-    createdAt: string;
-    views: number;
-}
-
-const dummyPosts: Post[] = [
-    {
-        id: 1,
-        title: '첫 번째 게시글입니다',
-        author: '관리자',
-        createdAt: '2026-01-20',
-        views: 123,
-    },
-    {
-        id: 2,
-        title: 'React Router Layout 정리',
-        author: 'minseok',
-        createdAt: '2026-01-21',
-        views: 87,
-    },
-    {
-        id: 3,
-        title: 'Sidebar 구조 어떻게 잡나요?',
-        author: 'user01',
-        createdAt: '2026-01-22',
-        views: 45,
-    },
-];
+const PAGE_SIZE = 5
+const FETCH_SIZE = 1000
 
 export default function PostListPage() {
+    const category = useCategory()
+
+    const [allPosts, setAllPosts] = useState<BoardPost[]>([])
+    const [page, setPage] = useState(0)
+    const [loading, setLoading] = useState(true)
+
+    // 카테고리 변경 시 페이지 초기화
+    useEffect(() => {
+        setPage(0)
+    }, [category])
+
+    // 게시글 전체 로딩
+    useEffect(() => {
+        const fetchPosts = async () => {
+            setLoading(true)
+            try {
+                const data = await getPosts({
+                    page: 0,
+                    size: FETCH_SIZE,
+                })
+                setAllPosts(data.content)
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchPosts()
+    }, [])
+
+    // ✅ 카테고리 필터링 + 최신순 정렬
+    const categoryPosts = useMemo(() => {
+        return allPosts
+            .filter((post) => post.category === category)
+            .sort(
+                (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime()
+            )
+    }, [allPosts, category])
+
+    // 프론트 pagination
+    const totalPages = Math.ceil(categoryPosts.length / PAGE_SIZE)
+    const pagedPosts = categoryPosts.slice(
+        page * PAGE_SIZE,
+        (page + 1) * PAGE_SIZE
+    )
+
+    if (loading) {
+        return <p className="p-4 text-gray-400">게시글 불러오는 중…</p>
+    }
+
     return (
-        <div>
-            {/* 페이지 제목 */}
-            <h2 className="mb-6 text-xl font-bold text-gray-900">
-                게시글 목록
-            </h2>
+        <div className="p-4 space-y-4">
+            {/* 상단 영역 */}
+            <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">
+                    {category} 게시판
+                </h2>
 
-            {/* 게시글 테이블 */}
-            <div className="overflow-hidden rounded-lg border border-gray-200 bg-white">
-                <table className="min-w-full border-collapse text-sm">
-                    <thead className="bg-gray-50 text-gray-600">
-                    <tr>
-                        <th className="px-4 py-3 text-left font-medium">번호</th>
-                        <th className="px-4 py-3 text-left font-medium">제목</th>
-                        <th className="px-4 py-3 text-left font-medium">작성자</th>
-                        <th className="px-4 py-3 text-left font-medium">작성일</th>
-                        <th className="px-4 py-3 text-right font-medium">조회수</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {dummyPosts.map((post) => (
-                        <tr
-                            key={post.id}
-                            className="border-t hover:bg-gray-50"
-                        >
-                            <td className="px-4 py-3">{post.id}</td>
-                            <td className="px-4 py-3">
-                                <Link
-                                    to={`/posts/${post.id}`}
-                                    className="font-medium text-indigo-600 hover:underline"
-                                >
-                                    {post.title}
-                                </Link>
-                            </td>
-                            <td className="px-4 py-3">{post.author}</td>
-                            <td className="px-4 py-3">{post.createdAt}</td>
-                            <td className="px-4 py-3 text-right">{post.views}</td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
-            </div>
-
-            {/* 하단 영역 */}
-            <div className="mt-6 flex justify-end">
+                {/* 글쓰기 버튼 */}
                 <Link
-                    to="/posts/create"
-                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500"
+                    to={`/posts/new?category=${category}`}
+                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-500"
                 >
                     글쓰기
                 </Link>
             </div>
+
+            {/* 게시글 없음 */}
+            {categoryPosts.length === 0 ? (
+                <p className="text-gray-400">게시글이 없습니다.</p>
+            ) : (
+                <>
+                    {/* 게시글 리스트 */}
+                    <div className="space-y-3">
+                        {pagedPosts.map((post) => (
+                            <Link
+                                key={post.id}
+                                to={`/posts/${post.id}?category=${category}`}
+                                className="block rounded-md border p-4 hover:bg-gray-50"
+                            >
+                                <h3 className="font-semibold">
+                                    {post.title}
+                                </h3>
+                                <p className="text-sm text-gray-500">
+                                    {post.category} ·{' '}
+                                    {new Date(post.createdAt).toLocaleString()}
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
+
+                    {/* Pagination */}
+                    <Pagination
+                        page={page}
+                        totalPages={totalPages}
+                        onChange={setPage}
+                        groupSize={5}
+                    />
+                </>
+            )}
         </div>
-    );
+    )
 }

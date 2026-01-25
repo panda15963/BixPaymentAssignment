@@ -25,7 +25,7 @@ export const signup = async (
     payload: SignupPayload
 ): Promise<SignupResponse> => {
     try {
-        const res = await axiosInstance.post<SignupResponse>(
+        const res = await axiosInstance.post(
             '/auth/signup',
             payload,
             {
@@ -33,6 +33,7 @@ export const signup = async (
                 _skipAuthRedirect: true,
             }
         );
+
         return res.data;
     } catch (error) {
         const err = error as AxiosError<SignupErrorResponse>;
@@ -67,7 +68,7 @@ export const login = async (
     payload: LoginPayload
 ): Promise<LoginResponse> => {
     try {
-        const res = await axiosInstance.post<LoginResponse>(
+        const res = await axiosInstance.post(
             '/auth/signin',
             payload,
             {
@@ -75,6 +76,16 @@ export const login = async (
                 _skipAuthRedirect: true,
             }
         );
+
+        const { accessToken, refreshToken } = res.data;
+
+        // ✅ 1. 토큰 저장
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        // ✅ 2. axios 기본 헤더 즉시 갱신 (핵심)
+        axiosInstance.defaults.headers.common.Authorization =
+            `Bearer ${accessToken}`;
 
         return res.data;
     } catch (error) {

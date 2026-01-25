@@ -19,9 +19,8 @@ export default function HeaderNavDesktop({ items }: Props) {
         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
             {items.map((item) => {
                 const isCurrent =
-                    item.to === '/'
-                        ? location.pathname === '/'
-                        : location.pathname.startsWith(item.to);
+                    location.pathname === item.to ||
+                    location.pathname.startsWith(item.to + '/');
 
                 return (
                     <Link

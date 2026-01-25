@@ -4,5 +4,5 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
-    { name: '게시판', to: '/' }
+    { name: '게시판', to: '/posts' }
 ];

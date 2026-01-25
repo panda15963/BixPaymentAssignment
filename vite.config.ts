@@ -12,6 +12,11 @@ export default defineConfig({
         secure: true,
         rewrite: (path) => path.replace(/^\/api/, ''),
       },
+      '/media': {
+        target: 'https://front-mission.bigs.or.kr',
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 });
