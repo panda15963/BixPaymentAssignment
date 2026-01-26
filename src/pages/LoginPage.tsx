@@ -4,7 +4,7 @@ import { TextInput } from '../components/ui/TextInput';
 import { login } from '../api/auth';
 import { useAuthStore } from '../stores/useAuthStore';
 import { jwtDecode } from 'jwt-decode';
-import axiosInstance from '../api/AxiosConfig'; // ✅ 추가
+import axiosInstance from '../api/AxiosConfig';
 
 /** JWT payload 타입 */
 interface JwtPayload {

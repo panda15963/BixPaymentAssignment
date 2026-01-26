@@ -1,13 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { NavItem } from './types';
+import { User } from '../../stores/useAuthStore';
 
 interface Props {
     readonly items: readonly NavItem[];
+    readonly user: User | null;
     readonly onNavClick?: () => void;
 }
 
-export default function HeaderNavMobile({ items, onNavClick }: Props) {
+export default function HeaderNavMobile({
+                                            items,
+                                            user,
+                                            onNavClick,
+                                        }: Props) {
     const location = useLocation();
+    const navigate = useNavigate();
 
     const baseClasses =
         'block border-l-4 py-2 pr-4 pl-3 text-base font-medium';
@@ -18,26 +25,46 @@ export default function HeaderNavMobile({ items, onNavClick }: Props) {
 
     return (
         <div className="space-y-1 pt-2 pb-4 px-2">
-            {items.map((item) => {
-                const isCurrent =
-                    item.to === '/'
-                        ? location.pathname === '/'
-                        : location.pathname.startsWith(item.to);
+            {items
+                .filter((item) => {
+                    // 게시판 경로 예시
+                    return !(item.to === '/posts' && !user);
 
-                return (
-                    <Link
-                        key={item.name}
-                        to={item.to}
-                        className={`${baseClasses} ${
-                            isCurrent ? currentClasses : defaultClasses
-                        }`}
-                        aria-current={isCurrent ? 'page' : undefined}
-                        onClick={onNavClick} // 메뉴 닫기만 담당
-                    >
-                        {item.name}
-                    </Link>
-                );
-            })}
+                })
+                .map((item) => {
+                    const isCurrent =
+                        item.to === '/'
+                            ? location.pathname === '/'
+                            : location.pathname.startsWith(item.to);
+
+                    const handleClick = (
+                        e: React.MouseEvent<HTMLAnchorElement>
+                    ) => {
+                        if (item.to === '/posts' && !user) {
+                            e.preventDefault();
+                            navigate('/login');
+                            return;
+                        }
+
+                        onNavClick?.(); // 모바일 메뉴 닫기
+                    };
+
+                    return (
+                        <Link
+                            key={item.name}
+                            to={item.to}
+                            className={`${baseClasses} ${
+                                isCurrent
+                                    ? currentClasses
+                                    : defaultClasses
+                            }`}
+                            aria-current={isCurrent ? 'page' : undefined}
+                            onClick={handleClick}
+                        >
+                            {item.name}
+                        </Link>
+                    );
+                })}
         </div>
     );
 }

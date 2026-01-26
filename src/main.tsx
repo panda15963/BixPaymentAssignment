@@ -12,6 +12,7 @@ import SignupPage from './pages/SignupPage'
 import PostListPage from './pages/PostListPage'
 import PostDetailPage from './pages/PostDetailPage'
 import PostCreatePage from './pages/PostCreatePage'
+import PostEditPage from './pages/PostEditPage'
 
 createRoot(document.getElementById('root')!).render(
     <BrowserRouter>
@@ -31,8 +32,11 @@ createRoot(document.getElementById('root')!).render(
                     {/* /posts */}
                     <Route index element={<PostListPage />} />
 
-                    {/* /posts/new ✅ 반드시 :id 보다 위 */}
+                    {/* /posts/new */}
                     <Route path="new" element={<PostCreatePage />} />
+
+                    {/* /posts/:id/edit ✅ 반드시 :id 보다 위 */}
+                    <Route path=":id/edit" element={<PostEditPage />} />
 
                     {/* /posts/:id */}
                     <Route path=":id" element={<PostDetailPage />} />

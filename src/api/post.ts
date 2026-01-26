@@ -170,3 +170,81 @@ export const createPost = async (
         )
     }
 }
+
+/* =======================
+ * Update Board Post
+ * ======================= */
+
+export interface UpdatePostRequest {
+    title: string
+    content: string
+    category: string // NOTICE | FREE | QNA | ETC
+}
+
+export const updatePost = async (
+    id: number,
+    request: UpdatePostRequest,
+    file?: File
+): Promise<void> => {
+    const formData = new FormData()
+
+    // ✅ JSON → Blob (curl의 --form 'request="{}";type=application/json' 과 동일)
+    formData.append(
+        'request',
+        new Blob([JSON.stringify(request)], {
+            type: 'application/json',
+        })
+    )
+
+    // ✅ 파일이 있을 경우에만 추가
+    if (file) {
+        formData.append('file', file)
+    }
+
+    try {
+        await axiosInstance.patch(`/boards/${id}`, formData)
+    } catch (error) {
+        const err = error as AxiosError
+
+        if (err.response?.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+        }
+
+        if (err.response?.status === 403) {
+            throw new Error('게시글 수정 권한이 없습니다.')
+        }
+
+        if (err.response?.status === 404) {
+            throw new Error('게시글을 찾을 수 없습니다.')
+        }
+
+        throw new Error('게시글 수정 중 오류가 발생했습니다.')
+    }
+}
+
+/* =======================
+ * Delete Board Post
+ * ======================= */
+
+/** 게시글 삭제 (로그인 필요) */
+export const deletePost = async (id: number): Promise<void> => {
+    try {
+        await axiosInstance.delete(`/boards/${id}`)
+    } catch (error) {
+        const err = error as AxiosError
+
+        if (err.response?.status === 401) {
+            throw new Error('로그인이 필요합니다.')
+        }
+
+        if (err.response?.status === 403) {
+            throw new Error('게시글 삭제 권한이 없습니다.')
+        }
+
+        if (err.response?.status === 404) {
+            throw new Error('게시글을 찾을 수 없습니다.')
+        }
+
+        throw new Error('게시글 삭제 중 오류가 발생했습니다.')
+    }
+}

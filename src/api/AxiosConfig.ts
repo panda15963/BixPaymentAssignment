@@ -34,7 +34,9 @@ axiosInstance.interceptors.request.use(
 
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        throw error;
+    }
 );
 
 /* =======================
@@ -56,7 +58,7 @@ axiosInstance.interceptors.response.use(
 
         // refresh 요청 자체는 재시도 금지
         if (originalRequest?.url?.includes('/auth/refresh')) {
-            return Promise.reject(error);
+            throw error;
         }
 
         if (
@@ -69,7 +71,7 @@ axiosInstance.interceptors.response.use(
             const refreshToken = localStorage.getItem('refreshToken');
             if (!refreshToken) {
                 logout();
-                return Promise.reject(error);
+                throw error;
             }
 
             // 이미 refresh 중이면 큐에 대기
@@ -114,13 +116,13 @@ axiosInstance.interceptors.response.use(
                 return axiosInstance(originalRequest);
             } catch (refreshError) {
                 logout();
-                return Promise.reject(refreshError);
+                throw refreshError;
             } finally {
                 isRefreshing = false;
             }
         }
 
-        return Promise.reject(error);
+        throw error;
     }
 );
 

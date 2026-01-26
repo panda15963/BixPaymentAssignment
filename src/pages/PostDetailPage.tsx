@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { getPostDetail } from '../api/post'
+import { getPostDetail, deletePost } from '../api/post'
 import type { BoardPostDetail } from '../api/post'
 
 export default function PostDetailPage() {
@@ -39,6 +39,28 @@ export default function PostDetailPage() {
     }, [id])
 
     /* =======================
+     * Delete handler
+     * ======================= */
+    const handleDelete = async () => {
+        if (!post) return
+
+        const ok = globalThis.confirm('정말 이 게시글을 삭제하시겠습니까?')
+        if (!ok) return
+
+        try {
+            await deletePost(post.id)
+            alert('게시글이 삭제되었습니다.')
+            navigate('/posts')
+        } catch (e) {
+            alert(
+                e instanceof Error
+                    ? e.message
+                    : '게시글 삭제 중 오류가 발생했습니다.'
+            )
+        }
+    }
+
+    /* =======================
      * Render
      * ======================= */
 
@@ -65,7 +87,7 @@ export default function PostDetailPage() {
     }
 
     return (
-        <div className="p-6 space-y-6 max-w-4xl">
+        <div className="p-6 space-y-6 mx-auto">
             {/* 제목 */}
             <div>
                 <h1 className="text-2xl font-bold text-gray-900">
@@ -83,7 +105,7 @@ export default function PostDetailPage() {
                     <img
                         src={post.imageUrl}
                         alt={post.title}
-                        className="w-full max-h-[500px] object-contain bg-gray-50"
+                        className="w-full max-h-125 object-contain bg-gray-50"
                         loading="lazy"
                     />
                 </div>
@@ -101,6 +123,20 @@ export default function PostDetailPage() {
                     className="rounded-md border px-4 py-2 text-sm hover:bg-gray-50"
                 >
                     목록으로
+                </button>
+
+                <button
+                    onClick={() => navigate(`/posts/${post.id}/edit`)}
+                    className="rounded-md bg-indigo-600 px-4 py-2 text-sm text-white hover:bg-indigo-700"
+                >
+                    수정
+                </button>
+
+                <button
+                    onClick={handleDelete}
+                    className="rounded-md bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
+                >
+                    삭제
                 </button>
             </div>
         </div>

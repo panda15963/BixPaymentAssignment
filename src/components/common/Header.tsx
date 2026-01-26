@@ -1,13 +1,15 @@
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import Logo from '../ui/Logo';
+import HeaderLogo from '../ui/Logo';
 import HeaderNavDesktop from '../header/HeaderNavDesktop';
 import HeaderProfile from '../header/HeaderProfile';
 import HeaderNavMobile from '../header/HeaderNavMobile';
 import { navItems } from '../header/types';
 import { useNavStore } from '../../stores/useNavStore';
+import { useAuthStore } from '../../stores/useAuthStore';
 
 export default function Header() {
     const { isMobileOpen, toggleMobile } = useNavStore();
+    const { user, clearUser } = useAuthStore();
 
     const handleNavClick = () => {
         toggleMobile(); // 네비 클릭 시 메뉴 자동 닫기
@@ -21,7 +23,10 @@ export default function Header() {
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                         <button
                             onClick={toggleMobile}
-                            className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:ring-2 focus:ring-indigo-600 focus:outline-none focus:ring-inset dark:hover:bg-white/5 dark:hover:text-white dark:focus:ring-white"
+                            className="group relative inline-flex items-center justify-center rounded-md p-2
+                            text-gray-400 hover:bg-gray-100 hover:text-gray-500
+                            focus:ring-2 focus:ring-indigo-600 focus:outline-none focus:ring-inset
+                            dark:hover:bg-white/5 dark:hover:text-white dark:focus:ring-white"
                             aria-expanded={isMobileOpen}
                             aria-controls="mobile-menu"
                         >
@@ -29,34 +34,47 @@ export default function Header() {
                             <span className="sr-only">Open main menu</span>
                             <Bars3Icon
                                 aria-hidden="true"
-                                className={`block size-6 transition-opacity ${isMobileOpen ? 'opacity-0' : 'opacity-100'}`}
+                                className={`block size-6 transition-opacity ${
+                                    isMobileOpen ? 'opacity-0' : 'opacity-100'
+                                }`}
                             />
                             <XMarkIcon
                                 aria-hidden="true"
-                                className={`size-6 transition-opacity ${isMobileOpen ? 'opacity-100' : 'opacity-0'}`}
+                                className={`size-6 transition-opacity ${
+                                    isMobileOpen ? 'opacity-100' : 'opacity-0'
+                                }`}
                             />
                         </button>
                     </div>
 
                     {/* Logo & Desktop Nav */}
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-                        <Logo />
-                        <div className="ml-6 hidden sm:ml-6 sm:flex sm:space-x-8">
-                            <HeaderNavDesktop items={navItems} />
+                        <HeaderLogo user={user} />
+
+                        <div className="ml-6 hidden sm:flex sm:space-x-8">
+                            <HeaderNavDesktop items={navItems} user={user} />
                         </div>
                     </div>
-                    <div className="flex items-center px-2 sm:px-0 sm:ml-6"> {/* px-2 모바일 여백, items-center */}
-                        <HeaderProfile />
+
+                    {/* Profile */}
+                    <div className="flex items-center px-2 sm:px-0 sm:ml-6">
+                        <HeaderProfile user={user} onLogout={clearUser} />
                     </div>
                 </div>
 
-                {/* Mobile menu - 올바른 포지셔닝과 z-index */}
+                {/* Mobile menu */}
                 {isMobileOpen && (
                     <div
                         id="mobile-menu"
-                        className="absolute inset-x-0 top-full origin-top bg-white dark:bg-gray-800 border-t dark:border-gray-700 shadow-xl z-50 sm:hidden"
+                        className="absolute inset-x-0 top-full origin-top bg-white
+                        dark:bg-gray-800 border-t dark:border-gray-700
+                        shadow-xl z-50 sm:hidden"
                     >
-                        <HeaderNavMobile items={navItems} onNavClick={handleNavClick} />
+                        <HeaderNavMobile
+                            items={navItems}
+                            user={user}
+                            onNavClick={handleNavClick}
+                        />
                     </div>
                 )}
             </div>
