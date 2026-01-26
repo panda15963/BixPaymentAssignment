@@ -17,7 +17,6 @@ export default function PostLayout() {
 
     const navigate = useNavigate()
 
-    // ✅ PostLayout 마운트 시 단 1회만 실행
     useEffect(() => {
         const fetchCategories = async () => {
             try {
@@ -25,9 +24,8 @@ export default function PostLayout() {
                 const nav = buildNavigationFromCategories(categories)
                 setNavigation(nav)
 
-                // ✅ 최초 진입 시 category 없으면 첫 카테고리로 이동
                 const hasCategory = new URLSearchParams(
-                    window.location.search
+                    globalThis.location.search
                 ).has('category')
 
                 if (!hasCategory && nav.length > 0) {
@@ -39,7 +37,7 @@ export default function PostLayout() {
         }
 
         fetchCategories()
-    }, []) // ✅ 의존성 배열 비움
+    }, [])
 
     return (
         <>

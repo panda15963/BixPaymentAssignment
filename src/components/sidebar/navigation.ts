@@ -24,9 +24,9 @@ const categoryIconMap: Record<string, NavigationItem['icon']> = {
 export const buildNavigationFromCategories = (
     categories: BoardCategoryResponse
 ): NavigationItem[] => {
-    return (Object.entries(categories) as [string, string][]).map(
+    return (Object.entries(categories)).map(
         ([code, label]) => ({
-            name: label, // ✅ string
+            name: label,
             to: `/posts?category=${code}`,
             icon: categoryIconMap[code] ?? ChartPieIcon,
         })

@@ -15,7 +15,6 @@ type Props = {
 export default function Sidebar({
                                     navigation = [],
                                 }: Readonly<Props>) {
-    // ✅ URL 기준 단일 source of truth
     const currentCategory = useCategory()
 
     return (

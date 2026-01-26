@@ -1,10 +1,5 @@
 import axiosInstance from './AxiosConfig';
 import { AxiosError } from 'axios';
-
-/* =======================
- * Signup
- * ======================= */
-
 export interface SignupPayload {
     username: string;
     name: string;
@@ -18,7 +13,6 @@ export interface SignupResponse {
     name: string;
 }
 
-/** 서버 validation 에러 타입 */
 export type SignupErrorResponse = Record<string, string[]>;
 
 export const signup = async (
@@ -45,10 +39,6 @@ export const signup = async (
         throw new Error('회원가입 중 오류가 발생했습니다.');
     }
 };
-
-/* =======================
- * Login
- * ======================= */
 
 export interface LoginPayload {
     username: string;
@@ -79,11 +69,9 @@ export const login = async (
 
         const { accessToken, refreshToken } = res.data;
 
-        // ✅ 1. 토큰 저장
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', refreshToken);
 
-        // ✅ 2. axios 기본 헤더 즉시 갱신 (핵심)
         axiosInstance.defaults.headers.common.Authorization =
             `Bearer ${accessToken}`;
 

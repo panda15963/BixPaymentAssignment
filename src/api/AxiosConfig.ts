@@ -2,10 +2,6 @@ import axios, {
     type AxiosInstance,
     type InternalAxiosRequestConfig,
 } from 'axios';
-
-/* =======================
- * Axios type augmentation
- * ======================= */
 declare module 'axios' {
     export interface InternalAxiosRequestConfig {
         _retry?: boolean;
@@ -15,13 +11,9 @@ declare module 'axios' {
 }
 
 const axiosInstance: AxiosInstance = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+    baseURL: '/api',
     timeout: 10000,
 });
-
-/* =======================
- * Request interceptor
- * ======================= */
 axiosInstance.interceptors.request.use(
     (config: InternalAxiosRequestConfig) => {
         if (config._skipAuth) return config;
@@ -39,10 +31,6 @@ axiosInstance.interceptors.request.use(
     }
 );
 
-/* =======================
- * Response interceptor (refresh)
- * ======================= */
-
 let isRefreshing = false;
 let refreshQueue: ((token: string) => void)[] = [];
 
@@ -56,7 +44,6 @@ axiosInstance.interceptors.response.use(
     async (error) => {
         const originalRequest = error.config as InternalAxiosRequestConfig;
 
-        // refresh 요청 자체는 재시도 금지
         if (originalRequest?.url?.includes('/auth/refresh')) {
             throw error;
         }
@@ -74,7 +61,6 @@ axiosInstance.interceptors.response.use(
                 throw error;
             }
 
-            // 이미 refresh 중이면 큐에 대기
             if (isRefreshing) {
                 return new Promise((resolve) => {
                     refreshQueue.push((newToken: string) => {
@@ -100,10 +86,8 @@ axiosInstance.interceptors.response.use(
 
                 const newAccessToken = res.data.accessToken;
 
-                // ✅ 토큰 저장
                 localStorage.setItem('accessToken', newAccessToken);
 
-                // ✅ axios 기본 헤더 갱신 (핵심)
                 axiosInstance.defaults.headers.common.Authorization =
                     `Bearer ${newAccessToken}`;
 
@@ -125,10 +109,6 @@ axiosInstance.interceptors.response.use(
         throw error;
     }
 );
-
-/* =======================
- * Logout helper
- * ======================= */
 function logout() {
     localStorage.removeItem('accessToken');
     localStorage.removeItem('refreshToken');

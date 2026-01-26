@@ -15,15 +15,6 @@ const navigation = [
             </svg>
         ),
     },
-    {
-        name: 'Vercel',
-        href: 'https://bix-payment-assignment.vercel.app/',
-        icon: (props: JSX.IntrinsicAttributes & SVGProps<SVGSVGElement>) => (
-            <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
-                <path d="M12 2L24 22H0L12 2z"/>
-            </svg>
-        ),
-    },
 ]
 
 export default function Footer() {

@@ -1,4 +1,4 @@
-import {type ChangeEvent} from 'react';
+import { type ChangeEvent, type ReactNode } from 'react';
 
 interface TextInputProps {
     readonly id: string;
@@ -8,16 +8,18 @@ interface TextInputProps {
     readonly value?: string;
     readonly onChange?: (e: ChangeEvent<HTMLInputElement>) => void;
     readonly error?: string;
+    readonly rightElement?: ReactNode;
 }
 
 export function TextInput({
                               id,
                               label,
-                              type = "text",
+                              type = 'text',
                               autoComplete,
                               value,
                               onChange,
                               error,
+                              rightElement,
                           }: Readonly<TextInputProps>) {
     return (
         <div>
@@ -28,7 +30,7 @@ export function TextInput({
                 {label}
             </label>
 
-            <div className="mt-2">
+            <div className="relative mt-2">
                 <input
                     id={id}
                     name={id}
@@ -38,7 +40,7 @@ export function TextInput({
                     value={value}
                     onChange={onChange}
                     className={`
-                        block w-full rounded-md bg-white px-3 py-1.5 text-base
+                        block w-full rounded-md bg-white px-3 py-1.5 pr-16 text-base
                         text-gray-900 outline-1 -outline-offset-1
                         outline-gray-300 placeholder:text-gray-400
                         focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600
@@ -48,6 +50,12 @@ export function TextInput({
                         ${error ? 'outline-red-500 focus:outline-red-500' : ''}
                     `}
                 />
+
+                {rightElement && (
+                    <div className="absolute inset-y-0 right-3 flex items-center">
+                        {rightElement}
+                    </div>
+                )}
             </div>
 
             {error && (

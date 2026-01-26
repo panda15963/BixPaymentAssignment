@@ -1,6 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import type { NavItem } from './types';
 import { User } from '../../stores/useAuthStore';
+import {MouseEvent} from "react";
 
 interface Props {
     readonly items: readonly NavItem[];
@@ -38,7 +39,7 @@ export default function HeaderNavMobile({
                             : location.pathname.startsWith(item.to);
 
                     const handleClick = (
-                        e: React.MouseEvent<HTMLAnchorElement>
+                        e: MouseEvent<HTMLAnchorElement>
                     ) => {
                         if (item.to === '/posts' && !user) {
                             e.preventDefault();

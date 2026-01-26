@@ -12,14 +12,13 @@ export default function Header() {
     const { user, clearUser } = useAuthStore();
 
     const handleNavClick = () => {
-        toggleMobile(); // 네비 클릭 시 메뉴 자동 닫기
+        toggleMobile();
     };
 
     return (
         <div className="relative z-50 bg-white shadow-sm border-b dark:bg-gray-800/50 dark:shadow-none dark:after:pointer-events-none dark:after:absolute dark:after:inset-x-0 dark:after:bottom-0 dark:after:h-px dark:after:bg-white/10">
             <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
                 <div className="relative flex h-16 justify-between">
-                    {/* Mobile toggle */}
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                         <button
                             onClick={toggleMobile}
@@ -47,7 +46,6 @@ export default function Header() {
                         </button>
                     </div>
 
-                    {/* Logo & Desktop Nav */}
                     <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
                         <HeaderLogo user={user} />
 
@@ -56,13 +54,11 @@ export default function Header() {
                         </div>
                     </div>
 
-                    {/* Profile */}
                     <div className="flex items-center px-2 sm:px-0 sm:ml-6">
                         <HeaderProfile user={user} onLogout={clearUser} />
                     </div>
                 </div>
 
-                {/* Mobile menu */}
                 {isMobileOpen && (
                     <div
                         id="mobile-menu"

@@ -13,17 +13,14 @@ export default function HeaderProfile(
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        // 토큰 제거
         localStorage.removeItem('accessToken');
         localStorage.removeItem('refreshToken');
 
-        // Header에서 내려준 로그아웃 로직 실행
         onLogout();
 
         navigate('/login', { replace: true });
     };
 
-    // 🔹 로그아웃 상태
     if (!user) {
         return (
             <div className="ml-3 flex items-center">
@@ -41,7 +38,6 @@ export default function HeaderProfile(
         );
     }
 
-    // 🔹 로그인 상태
     return (
         <div className="flex items-center">
             <Menu as="div" className="relative ml-3">
